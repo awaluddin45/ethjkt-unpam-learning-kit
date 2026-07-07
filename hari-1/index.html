@@ -72,6 +72,12 @@
   .card.reveal { animation: pop .4s ease; }
   .card.ssr.reveal { animation: pop .4s ease, shake .5s ease .4s, glowpulse 1.2s ease-in-out .4s 2; }
 
+  .result {
+    min-height: 38px; margin: -6px 0 16px; color: #cbd0ec;
+    font-size: 13px; line-height: 1.45;
+  }
+  .result strong { color: #ffd24a; }
+
   .buttons { display: flex; gap: 12px; margin-bottom: 22px; }
   .btn {
     flex: 1; padding: 15px 0; border: none; border-radius: 14px;
@@ -118,6 +124,8 @@
       </div>
     </div>
 
+    <div class="result" id="resultText">Hasil pull akan muncul di sini.</div>
+
     <div class="buttons">
       <button class="btn" id="tarik1">TARIK 1x</button>
       <button class="btn gold" id="tarik10">TARIK 10x</button>
@@ -138,28 +146,139 @@
   // Ikutin urutan checkpoint di README.md. Contoh prompt ada di sana.
   // ==========================================================
 
-  // CHECKPOINT 1 - Data & acak
-  //   TODO: bikin object `hadiah` berisi 4 array (ssr, epic, rare, common),
-  //         tiap item { n: "nama", e: "emoji" }.
-  //   TODO: bikin variabel pity=0, total=0, ssrCount=0.
-  //   TODO: fungsi pilihAcak(arr) -> balikin 1 item acak dari array.
+  const hadiah = {
+    ssr: [
+      { n: "ETHJKT Legend", e: "👑" },
+      { n: "Smart Contract Master", e: "💎" },
+      { n: "Onchain Wizard", e: "⚡" }
+    ],
+    epic: [
+      { n: "Gas Optimizer", e: "🔥" },
+      { n: "Prompt Engineer", e: "🤖" },
+      { n: "Bug Hunter", e: "🛡️" }
+    ],
+    rare: [
+      { n: "Git Commit Rapi", e: "📝" },
+      { n: "Node Runner", e: "🟢" },
+      { n: "Terminal Ninja", e: "⌨️" }
+    ],
+    common: [
+      { n: "Kopi Kelas", e: "☕" },
+      { n: "Sticker ETHJKT", e: "🏷️" },
+      { n: "Catatan Baru", e: "📒" },
+      { n: "Semangat Debug", e: "🔍" }
+    ]
+  };
 
-  // CHECKPOINT 2 - Logika tarikan
-  //   TODO: fungsi rollSatu() -> total & pity nambah 1, pakai Math.random():
-  //         pity>=10 ATAU acak<0.03 -> SSR (pity balik 0, ssrCount nambah)
-  //         acak<0.10 -> EPIC, acak<0.30 -> RARE, selain itu -> COMMON.
-  //         balikin { kelas, nama, emoji }.
+  const BATAS_PITY = 10;
+  const MAKS_RIWAYAT = 12;
 
-  // CHECKPOINT 3 - Tampilkan + animasi
-  //   TODO: fungsi tampilkan(hasil) -> isi #cardEmoji, #cardName, #cardRarity,
-  //         set className kartu jadi "card <kelas> reveal" (trik reset animasi:
-  //         set "card", baca card.offsetWidth, baru set kelas+reveal).
-  //         Update #total, #ssrCount, #pityText, dan lebar #pityFill.
+  let pity = 0;
+  let total = 0;
+  let ssrCount = 0;
 
-  // CHECKPOINT 4 - Riwayat + tombol
-  //   TODO: fungsi tambahRiwayat(hasil) -> bikin div .chip <kelas>, isi emoji,
-  //         taruh paling depan di #history, batasi maks 12 chip.
-  //   TODO: tombol #tarik1 -> tarik 1x. tombol #tarik10 -> ulang 10x.
+  const elemen = {
+    card: document.getElementById("card"),
+    emoji: document.getElementById("cardEmoji"),
+    nama: document.getElementById("cardName"),
+    rarity: document.getElementById("cardRarity"),
+    total: document.getElementById("total"),
+    ssrCount: document.getElementById("ssrCount"),
+    pityText: document.getElementById("pityText"),
+    pityFill: document.getElementById("pityFill"),
+    resultText: document.getElementById("resultText"),
+    history: document.getElementById("history"),
+    tarik1: document.getElementById("tarik1"),
+    tarik10: document.getElementById("tarik10")
+  };
+
+  function pilihAcak(daftar) {
+    const index = Math.floor(Math.random() * daftar.length);
+    return daftar[index];
+  }
+
+  function buatHasil(kelas) {
+    const item = pilihAcak(hadiah[kelas]);
+    return { kelas, nama: item.n, emoji: item.e };
+  }
+
+  function rollSatu() {
+    total += 1;
+    pity += 1;
+
+    const angkaAcak = Math.random();
+    let kelas = "common";
+
+    // Pity membuat SSR pasti keluar setelah 10 tarikan tanpa SSR.
+    if (pity >= BATAS_PITY || angkaAcak < 0.03) {
+      kelas = "ssr";
+      pity = 0;
+      ssrCount += 1;
+    } else if (angkaAcak < 0.10) {
+      kelas = "epic";
+    } else if (angkaAcak < 0.30) {
+      kelas = "rare";
+    }
+
+    return buatHasil(kelas);
+  }
+
+  function tampilkan(hasil) {
+    elemen.emoji.textContent = hasil.emoji;
+    elemen.nama.textContent = hasil.nama;
+    elemen.rarity.textContent = hasil.kelas.toUpperCase();
+
+    // Reset class sebentar supaya animasi reveal bisa jalan setiap pull.
+    elemen.card.className = "card";
+    elemen.card.offsetWidth;
+    elemen.card.className = `card ${hasil.kelas} reveal`;
+
+    elemen.total.textContent = total;
+    elemen.ssrCount.textContent = ssrCount;
+    elemen.pityText.textContent = `${pity} / ${BATAS_PITY}`;
+    elemen.pityFill.style.width = `${(pity / BATAS_PITY) * 100}%`;
+  }
+
+  function tambahRiwayat(hasil) {
+    const chip = document.createElement("div");
+    chip.className = `chip ${hasil.kelas}`;
+    chip.textContent = hasil.emoji;
+    chip.title = `${hasil.nama} (${hasil.kelas.toUpperCase()})`;
+
+    elemen.history.prepend(chip);
+
+    while (elemen.history.children.length > MAKS_RIWAYAT) {
+      elemen.history.lastElementChild.remove();
+    }
+  }
+
+  function ringkasHasil(hasilTarikan) {
+    const jumlahSSR = hasilTarikan.filter((hasil) => hasil.kelas === "ssr").length;
+    const terakhir = hasilTarikan[hasilTarikan.length - 1];
+
+    if (hasilTarikan.length === 1) {
+      elemen.resultText.innerHTML = `Kamu dapat <strong>${terakhir.nama}</strong> (${terakhir.kelas.toUpperCase()}).`;
+      return;
+    }
+
+    elemen.resultText.innerHTML = `Pull 10x selesai. SSR didapat: <strong>${jumlahSSR}</strong>. Kartu terakhir: ${terakhir.emoji} ${terakhir.nama}.`;
+  }
+
+  function tarik(jumlah) {
+    const hasilTarikan = [];
+
+    for (let i = 0; i < jumlah; i += 1) {
+      const hasil = rollSatu();
+      hasilTarikan.push(hasil);
+      tambahRiwayat(hasil);
+    }
+
+    tampilkan(hasilTarikan[hasilTarikan.length - 1]);
+    ringkasHasil(hasilTarikan);
+  }
+
+  elemen.tarik1.addEventListener("click", () => tarik(1));
+  elemen.tarik10.addEventListener("click", () => tarik(10));
 
   // >> Buka Codex, kerjain checkpoint SATU PER SATU. Baca hasilnya.
   // >> Kamu PILOT-nya, bukan penonton.
