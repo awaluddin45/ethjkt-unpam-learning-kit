@@ -27,17 +27,16 @@ Jadi tenang, kalian nggak dituntut jago sintaks. Kalian dituntut PAHAM.
 
 ## CHECKLIST PERSIAPAN
 
-Centang satu-satu. Kalau kedelapan ini beres, kalian aman.
+Centang satu-satu. Kalau ketujuh ini beres, kalian aman.
 
 ```
 [ ] 1. Punya akun GitHub (buat simpan & pamer karya)
 [ ] 2. Git ke-install di laptop
-[ ] 3. Node.js ke-install di laptop
+[ ] 3. Node.js + npm ke-install (buat tools + jalanin interface DEX Hari 3)
 [ ] 4. VSCode ke-install (editor kode + terminal built-in)
-[ ] 5. Extension "Live Server" by Ritwick Dey di VSCode (buat Hari 3) -> Langkah 4
-[ ] 6. Punya AI coding CLI gratis yang jalan di terminal (Codex CLI)
-[ ] 7. Extension MetaMask ke-install (dompet; dipakai mulai Hari 3) -> Langkah 6
-[ ] 8. Udah tes semua lewat "Verifikasi Akhir" di bawah
+[ ] 5. Punya AI coding CLI gratis yang jalan di terminal (Codex CLI)
+[ ] 6. Extension MetaMask ke-install (dompet; dipakai mulai Hari 3) -> Langkah 6
+[ ] 7. Udah tes semua lewat "Verifikasi Akhir" di bawah
 ```
 
 Spek laptop minimal: bisa buka browser + terminal. Windows, Mac,
@@ -132,6 +131,10 @@ npm -v
 Kalau dua-duanya keluar angka versi (contoh `v22.x.x` dan `10.x.x`),
 berarti SUKSES. `npm` ikut ke-install bareng Node otomatis.
 
+Nanti Hari 3, interface DEX kita dijalanin pakai npm (`npm install` lalu
+`npm run dev`). Nggak usah install apa-apa lagi sekarang — cukup pastikan
+`node -v` dan `npm -v` keluar angka.
+
 ---
 
 ## LANGKAH 4 — Install VSCode (Editor Kode)
@@ -154,10 +157,6 @@ tombol backtick, di pojok kiri atas keyboard). Muncul kotak hitam di
 bawah itu terminalnya. Semua perintah CLI kita jalanin di situ.
 
 Cek berhasil: VSCode kebuka DAN kalian bisa munculin terminal di dalamnya.
-
-BONUS (dipakai Hari 3): install extension **"Live Server" by Ritwick Dey**.
-Buka Extensions (Ctrl+Shift+X), cari "Live Server", klik Install. Nanti buat
-buka interface DEX tinggal klik tombol "Go Live" di pojok kanan-bawah.
 
 ---
 
@@ -302,7 +301,6 @@ pas hari-H. Kita beresin 5 menit di awal kelas.
 [ ] Username & password GitHub (jangan lupa!)
 [ ] Akun ChatGPT + Codex CLI yang udah bisa login di terminal
 [ ] MetaMask ke-install + seed phrase disimpan aman (buat Hari 3)
-[ ] Extension Live Server (Ritwick Dey) udah ke-install
 [ ] Niat belajar + siap salah. Salah itu bagian dari proses.
 ```
 
